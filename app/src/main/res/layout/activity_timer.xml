@@ -9,6 +9,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.rz.alon.smartslim.TimerActivity"
     android:background="#4d52ea">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="23dp"
+        android:text="@string/general_explanation_label"
+        android:id="@+id/textView3"
+        android:gravity="center"
+        android:layout_alignRight="@+id/linearLayout"
+        android:layout_alignEnd="@+id/linearLayout"
+        android:textColor="#f5f5f5"
+        android:layout_alignParentTop="true"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -16,18 +28,45 @@
 
         android:text="@string/zero_time"
         android:id="@+id/txtTimer"
-        android:layout_marginTop="130dp"
+        android:layout_marginTop="150dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:textSize="56dp"
         android:textColor="#f5f5f5" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:text="@string/choose_time_label"
+        android:id="@+id/textView"
+        android:gravity="center"
+                android:layout_alignRight="@+id/linearLayout"
+        android:layout_alignEnd="@+id/linearLayout"
+        android:textColor="#f5f5f5"
+        android:layout_below="@id/txtTimer"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:text="@string/recommended_explanation_label"
+        android:id="@+id/textView1"
+        android:gravity="center"
+        android:layout_below="@+id/textView"
+        android:layout_marginTop="20dp"
+        android:layout_centerVertical="true"
+        android:layout_alignRight="@+id/linearLayout"
+        android:layout_alignEnd="@+id/linearLayout"
+        android:textColor="#f5f5f5"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_below="@id/txtTimer"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="150dp"
         android:id="@+id/linearLayout">
 
 
@@ -65,13 +104,14 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/stop"
+        android:text="@string/restart"
         android:id="@+id/btnStop"
+        android:visibility="invisible"
         android:layout_weight="1"
         android:width="100dp"
         android:layout_below="@+id/linearLayout"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="25dp"
         android:background="@android:color/transparent"
         android:textColor="#f5f5f5"/>
 
@@ -96,4 +136,6 @@
         android:layout_alignTop="@+id/txtTimer"
         android:layout_alignRight="@+id/linearLayout"
         android:layout_alignEnd="@+id/linearLayout" />
+
+
 </RelativeLayout>

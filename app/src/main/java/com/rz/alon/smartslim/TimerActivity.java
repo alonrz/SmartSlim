@@ -17,6 +17,7 @@ public class TimerActivity extends AppCompatActivity {
     private static final long THREE_HOURS_IN_MILLIS = 3 * ONE_HOUR_IN_MILLIS;
     private static final long THREE_AND_HALF_HOURS_IN_MILLIS = 3 * ONE_HOUR_IN_MILLIS + (ONE_HOUR_IN_MILLIS / 2);
     private static final long TWO_AND_HALF_HOURS_IN_MILLIS = 2 * ONE_HOUR_IN_MILLIS + (ONE_HOUR_IN_MILLIS / 2);
+    public static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
 
     //UI components
     private TextView txtTimer;
@@ -30,6 +31,7 @@ public class TimerActivity extends AppCompatActivity {
     //Variables
     CountDownTimer mCounter;
     long mMillisLeft;
+    boolean isTimerRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,20 +54,65 @@ public class TimerActivity extends AppCompatActivity {
                 startNewTimer(THREE_HOURS_IN_MILLIS);
             }
         });
+        btnAdd3Half.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startNewTimer(THREE_AND_HALF_HOURS_IN_MILLIS);
+            }
+        });
+        btnAdd2Half.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startNewTimer(TWO_AND_HALF_HOURS_IN_MILLIS);
+            }
+        });
         btnAdd15.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                startNewTimer(mMillisLeft + 15 * 60 * 1000);
+                startNewTimer(mMillisLeft + FIFTEEN_MINUTES);
+            }
+        });
+        btnDeduct15.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                startNewTimer(mMillisLeft - FIFTEEN_MINUTES);
+            }
+        });
+        btnStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isTimerRunning) {
+                    stopTimer();
+                } else {
+                    startTimer();
+                }
             }
         });
     }
 
     private void startNewTimer(long milliseconds) {
-        if(mCounter != null)
-            mCounter.cancel();
+        stopTimer();
+        mCounter = new ExtendedCounterDownTimer(milliseconds, TIMER_STEP);
+        startTimer();
+    }
 
-        mCounter = new ExtendedCounterDownTimer(milliseconds, TIMER_STEP).start();
+    private void stopTimer() {
+        if(mCounter != null) {
+            mCounter.cancel();
+            isTimerRunning = false;
+            btnStop.setText(R.string.restart);
+            btnStop.setVisibility(View.VISIBLE);
+        }
+    }
+    private void startTimer() {
+        if(mCounter != null) {
+            mCounter.start();
+            isTimerRunning = true;
+            btnStop.setText(R.string.pause);
+            btnStop.setVisibility(View.VISIBLE);
+        }
     }
 
     class ExtendedCounterDownTimer extends CountDownTimer {
