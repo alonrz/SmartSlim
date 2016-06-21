@@ -1,20 +1,22 @@
 package com.rz.alon.smartslim;
 
 import android.os.CountDownTimer;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class TimerActivity extends AppCompatActivity {
 
     //Constants
-    private static final long ONE_SECOND = 100;
+    private static final long TIMER_STEP = 100;
+    private static final long ONE_HOUR_IN_MILLIS = 60 * 60 * 1000;
+    private static final long THREE_HOURS_IN_MILLIS = 3 * ONE_HOUR_IN_MILLIS;
+    private static final long THREE_AND_HALF_HOURS_IN_MILLIS = 3 * ONE_HOUR_IN_MILLIS + (ONE_HOUR_IN_MILLIS / 2);
+    private static final long TWO_AND_HALF_HOURS_IN_MILLIS = 2 * ONE_HOUR_IN_MILLIS + (ONE_HOUR_IN_MILLIS / 2);
 
     //UI components
     private TextView txtTimer;
@@ -47,16 +49,23 @@ public class TimerActivity extends AppCompatActivity {
         btnAdd3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCounter = new ExtendedCounterDownTimer(100000, ONE_SECOND).start();
+                startNewTimer(THREE_HOURS_IN_MILLIS);
             }
         });
         btnAdd15.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                mCounter = new ExtendedCounterDownTimer(mMillisLeft + 15*1000, ONE_SECOND).start();
+                startNewTimer(mMillisLeft + 15 * 60 * 1000);
             }
         });
+    }
+
+    private void startNewTimer(long milliseconds) {
+        if(mCounter != null)
+            mCounter.cancel();
+
+        mCounter = new ExtendedCounterDownTimer(milliseconds, TIMER_STEP).start();
     }
 
     class ExtendedCounterDownTimer extends CountDownTimer {
