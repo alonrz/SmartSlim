@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Smart Slim Timer</string>
+    <string name="add_2_half">2.5 hours</string>
+    <string name="add_3">3 hours</string>
+    <string name="add_3_half">3.5 hours</string>
+    <string name="zero_time">0:00:00</string>
+    <string name="stop">STOP</string>
+    <string name="start">START</string>
+    <string name="btn_add15min">+15m</string>
+    <string name="btn_deduct15min">-15m</string>
+</resources>
