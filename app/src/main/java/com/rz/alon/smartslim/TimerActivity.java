@@ -1,5 +1,8 @@
 package com.rz.alon.smartslim;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -47,37 +50,46 @@ public class TimerActivity extends AppCompatActivity {
         addClickActions();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intent = new Intent(this, AlarmReciever)
+        PendingIntent pendingIntent = PendingIntent.get
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(ALARM_SERVICE);
+        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, 10, );
+    }
+
     private void addClickActions() {
         btnAdd3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startNewTimer(THREE_HOURS_IN_MILLIS);
+                startTimer(THREE_HOURS_IN_MILLIS);
             }
         });
         btnAdd3Half.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startNewTimer(THREE_AND_HALF_HOURS_IN_MILLIS);
+                startTimer(THREE_AND_HALF_HOURS_IN_MILLIS);
             }
         });
         btnAdd2Half.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startNewTimer(TWO_AND_HALF_HOURS_IN_MILLIS);
+                startTimer(TWO_AND_HALF_HOURS_IN_MILLIS);
             }
         });
         btnAdd15.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                startNewTimer(mMillisLeft + FIFTEEN_MINUTES);
+                startTimer(mMillisLeft + FIFTEEN_MINUTES);
             }
         });
         btnDeduct15.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                startNewTimer(mMillisLeft - FIFTEEN_MINUTES);
+                startTimer(mMillisLeft - FIFTEEN_MINUTES);
             }
         });
         btnStop.setOnClickListener(new View.OnClickListener() {
@@ -86,16 +98,10 @@ public class TimerActivity extends AppCompatActivity {
                 if(isTimerRunning) {
                     stopTimer();
                 } else {
-                    startTimer();
+                    startTimer(mMillisLeft);
                 }
             }
         });
-    }
-
-    private void startNewTimer(long milliseconds) {
-        stopTimer();
-        mCounter = new ExtendedCounterDownTimer(milliseconds, TIMER_STEP);
-        startTimer();
     }
 
     private void stopTimer() {
@@ -106,14 +112,15 @@ public class TimerActivity extends AppCompatActivity {
             btnStop.setVisibility(View.VISIBLE);
         }
     }
-    private void startTimer() {
-        if(mCounter != null) {
-            mCounter.start();
-            isTimerRunning = true;
-            btnStop.setText(R.string.pause);
-            btnStop.setVisibility(View.VISIBLE);
-        }
+    private void startTimer(long milliseconds) {
+        if(mCounter != null) mCounter.cancel();
+        mCounter = new ExtendedCounterDownTimer(milliseconds, TIMER_STEP);
+        mCounter.start();
+        isTimerRunning = true;
+        btnStop.setText(R.string.pause);
+        btnStop.setVisibility(View.VISIBLE);
     }
+
 
     class ExtendedCounterDownTimer extends CountDownTimer {
 
