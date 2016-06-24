@@ -1,11 +1,8 @@
 package com.rz.alon.smartslim;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Intent;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -35,11 +32,13 @@ public class TimerActivity extends AppCompatActivity {
     CountDownTimer mCounter;
     long mMillisLeft;
     boolean isTimerRunning = false;
+    AppReceiver mAlarm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
+        mAlarm = new AppReceiver();
         btnAdd3 = (Button) findViewById(R.id.btnAdd3);
         btnAdd3Half = (Button) findViewById(R.id.btnAdd3Half);
         btnAdd2Half = (Button) findViewById(R.id.btnAdd2Half);
@@ -53,11 +52,16 @@ public class TimerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Intent intent = new Intent(this, AlarmReciever)
-        PendingIntent pendingIntent = PendingIntent.get
-        AlarmManager alarmManager = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, 10, );
+
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+       mAlarm.setAlarm(this);
+    }
+
 
     private void addClickActions() {
         btnAdd3.setOnClickListener(new View.OnClickListener() {
