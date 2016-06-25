@@ -1,7 +1,9 @@
 package com.rz.alon.smartslim;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +20,7 @@ public class TimerActivity extends AppCompatActivity {
     private static final long THREE_AND_HALF_HOURS_IN_MILLIS = 3 * ONE_HOUR_IN_MILLIS + (ONE_HOUR_IN_MILLIS / 2);
     private static final long TWO_AND_HALF_HOURS_IN_MILLIS = 2 * ONE_HOUR_IN_MILLIS + (ONE_HOUR_IN_MILLIS / 2);
     public static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
+    public static final String WALL_TIME_LEFT = "timeLeft";
 
     //UI components
     private TextView txtTimer;
@@ -47,6 +50,33 @@ public class TimerActivity extends AppCompatActivity {
         btnAdd15 = (Button) findViewById(R.id.btn_add15);
         btnDeduct15 = (Button) findViewById(R.id.btn_deduct15);
         addClickActions();
+        long wallTimeLeft = getPreferences(MODE_PRIVATE).getLong(WALL_TIME_LEFT, 0);
+
+        if(wallTimeLeft != 0) {
+            mMillisLeft = wallTimeLeft - System.currentTimeMillis();
+            startTimer(mMillisLeft);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //save time
+        SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
+        if(mMillisLeft != 0) {
+            editor.putLong(WALL_TIME_LEFT, System.currentTimeMillis() + mMillisLeft);
+        }
+        else {
+            editor.putLong(WALL_TIME_LEFT, 0);
+        }
+        editor.commit();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAlarm.setAlarm(this, mMillisLeft);
     }
 
     @Override
@@ -54,14 +84,6 @@ public class TimerActivity extends AppCompatActivity {
         super.onDestroy();
 
     }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-       mAlarm.setAlarm(this);
-    }
-
 
     private void addClickActions() {
         btnAdd3.setOnClickListener(new View.OnClickListener() {
