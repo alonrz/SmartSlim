@@ -1,12 +1,16 @@
 package com.rz.alon.smartslim;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +38,7 @@ public class TimerFragment extends Fragment {
     private static final long TWO_AND_HALF_HOURS_IN_MILLIS = 2 * ONE_HOUR_IN_MILLIS + (ONE_HOUR_IN_MILLIS / 2);
     public static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
     public static final String WALL_TIME_LEFT = "timeLeft";
+    public static final int NOTIFICAION_ID = 001;
 
     //UI components
     private TextView txtTimer;
@@ -61,6 +66,8 @@ public class TimerFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private NotificationCompat.Builder mBuilder;
+    private NotificationManagerCompat mNotificationManager;
 
     public TimerFragment() {
         // Required empty public constructor
@@ -248,6 +255,30 @@ public class TimerFragment extends Fragment {
         isTimerRunning = true;
         btnStop.setText(R.string.pause);
         btnStop.setVisibility(View.VISIBLE);
+
+        mBuilder = new NotificationCompat.Builder(getActivity())
+                .setSmallIcon(R.drawable.notification_template_icon_bg)
+                .setContentTitle("Timer")
+                .setContentText(mMillisLeft + "");
+
+        Intent resultIntent = new Intent(getActivity(), TimerActivity.class);
+
+// Because clicking the notification opens a new ("special") activity, there's
+// no need to create an artificial back stack.
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(
+                        getActivity(),
+                        0,
+                        resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+        mBuilder.setContentIntent(resultPendingIntent);
+
+
+        mNotificationManager =
+                (NotificationManagerCompat) NotificationManagerCompat.from(getActivity());
+        mNotificationManager.notify(NOTIFICAION_ID, mBuilder.build());
     }
 
     class ExtendedCounterDownTimer extends CountDownTimer {
@@ -260,9 +291,13 @@ public class TimerFragment extends Fragment {
         @Override
         public void onTick(long millisUntilFinished) {
             mMillisLeft = millisUntilFinished;
-            txtTimer.setText(String.format("%d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millisUntilFinished),
+            String displayText = String.format("%d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millisUntilFinished),
                     TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours((millisUntilFinished))),
-                    TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((millisUntilFinished)))));
+                    TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((millisUntilFinished))));
+            txtTimer.setText(displayText);
+            mBuilder.setContentText(displayText);
+            mNotificationManager.notify(NOTIFICAION_ID, mBuilder.build());
+
         }
 
         @Override
