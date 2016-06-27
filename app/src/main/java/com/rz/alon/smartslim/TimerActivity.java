@@ -1,171 +1,32 @@
 package com.rz.alon.smartslim;
 
-import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.SystemClock;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
-import java.util.concurrent.TimeUnit;
+public class TimerActivity extends AppCompatActivity implements TimerFragment.OnFragmentInteractionListener{
 
-public class TimerActivity extends AppCompatActivity {
-
-    //Constants
-    private static final long TIMER_STEP = 100;
-    private static final long ONE_HOUR_IN_MILLIS = 60 * 60 * 1000;
-    private static final long THREE_HOURS_IN_MILLIS = 3 * ONE_HOUR_IN_MILLIS;
-    private static final long THREE_AND_HALF_HOURS_IN_MILLIS = 3 * ONE_HOUR_IN_MILLIS + (ONE_HOUR_IN_MILLIS / 2);
-    private static final long TWO_AND_HALF_HOURS_IN_MILLIS = 2 * ONE_HOUR_IN_MILLIS + (ONE_HOUR_IN_MILLIS / 2);
-    public static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
-    public static final String WALL_TIME_LEFT = "timeLeft";
-
-    //UI components
-    private TextView txtTimer;
-    private Button btnAdd3;
-    private Button btnAdd2Half;
-    private Button btnAdd3Half;
-    private Button btnStop;
-    private Button btnAdd15;
-    private Button btnDeduct15;
-
-    //Variables
-    CountDownTimer mCounter;
-    long mMillisLeft;
-    boolean isTimerRunning = false;
-    AppReceiver mAlarm;
+    FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_timer);
-        mAlarm = new AppReceiver();
-        btnAdd3 = (Button) findViewById(R.id.btnAdd3);
-        btnAdd3Half = (Button) findViewById(R.id.btnAdd3Half);
-        btnAdd2Half = (Button) findViewById(R.id.btnAdd2Half);
-        btnStop = (Button) findViewById(R.id.btnStop);
-        txtTimer = (TextView) findViewById(R.id.txtTimer);
-        btnAdd15 = (Button) findViewById(R.id.btn_add15);
-        btnDeduct15 = (Button) findViewById(R.id.btn_deduct15);
-        addClickActions();
-        long wallTimeLeft = getPreferences(MODE_PRIVATE).getLong(WALL_TIME_LEFT, 0);
 
-        if(wallTimeLeft != 0) {
-            mMillisLeft = wallTimeLeft - System.currentTimeMillis();
-            startTimer(mMillisLeft);
+        fragmentManager = getSupportFragmentManager();
+
+        if(savedInstanceState == null) {
+            TimerFragment timerFragment = new TimerFragment();
+            fragmentManager.beginTransaction()
+                    .add(R.id.fragment_timer, timerFragment)
+                    .addToBackStack(null)
+                    .commit();
         }
     }
+
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    public void onFragmentInteraction(Uri uri) {
 
-        //save time
-        SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
-        if(mMillisLeft != 0) {
-            editor.putLong(WALL_TIME_LEFT, System.currentTimeMillis() + mMillisLeft);
-        }
-        else {
-            editor.putLong(WALL_TIME_LEFT, 0);
-        }
-        editor.commit();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mAlarm.setAlarm(this, mMillisLeft);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
-
-    private void addClickActions() {
-        btnAdd3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startTimer(THREE_HOURS_IN_MILLIS);
-            }
-        });
-        btnAdd3Half.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startTimer(THREE_AND_HALF_HOURS_IN_MILLIS);
-            }
-        });
-        btnAdd2Half.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startTimer(TWO_AND_HALF_HOURS_IN_MILLIS);
-            }
-        });
-        btnAdd15.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                startTimer(mMillisLeft + FIFTEEN_MINUTES);
-            }
-        });
-        btnDeduct15.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                startTimer(mMillisLeft - FIFTEEN_MINUTES);
-            }
-        });
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isTimerRunning) {
-                    stopTimer();
-                } else {
-                    startTimer(mMillisLeft);
-                }
-            }
-        });
-    }
-
-    private void stopTimer() {
-        if(mCounter != null) {
-            mCounter.cancel();
-            isTimerRunning = false;
-            btnStop.setText(R.string.restart);
-            btnStop.setVisibility(View.VISIBLE);
-        }
-    }
-    private void startTimer(long milliseconds) {
-        if(mCounter != null) mCounter.cancel();
-        mCounter = new ExtendedCounterDownTimer(milliseconds, TIMER_STEP);
-        mCounter.start();
-        isTimerRunning = true;
-        btnStop.setText(R.string.pause);
-        btnStop.setVisibility(View.VISIBLE);
-    }
-
-
-    class ExtendedCounterDownTimer extends CountDownTimer {
-
-        //Default ctor
-        public ExtendedCounterDownTimer(long millisInFuture, long countDownInterval) {
-            super(millisInFuture, countDownInterval);
-        }
-
-        @Override
-        public void onTick(long millisUntilFinished) {
-            mMillisLeft = millisUntilFinished;
-            txtTimer.setText(String.format("%d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millisUntilFinished),
-                    TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours((millisUntilFinished))),
-                    TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((millisUntilFinished)))));
-        }
-
-        @Override
-        public void onFinish() {
-            txtTimer.setText(R.string.zero_time);
-        }
     }
 }
