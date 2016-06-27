@@ -13,12 +13,13 @@ public class TimerActivity extends AppCompatActivity implements TimerFragment.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_timer);
         fragmentManager = getSupportFragmentManager();
 
         if(savedInstanceState == null) {
             TimerFragment timerFragment = new TimerFragment();
             fragmentManager.beginTransaction()
-                    .add(R.id.fragment_timer, timerFragment)
+                    .add(R.id.fragment_placeholder, timerFragment)
                     .addToBackStack(null)
                     .commit();
         }

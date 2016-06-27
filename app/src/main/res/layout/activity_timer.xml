@@ -13,8 +13,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fragment_layout"
-        class="com.rz.alon.smartslim.TimerFragment"/>
+        android:id="@+id/fragment_placeholder"
+        />
 
 
 </RelativeLayout>
