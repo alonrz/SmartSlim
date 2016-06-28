@@ -39,6 +39,7 @@ public class TimerFragment extends Fragment {
     public static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
     public static final String WALL_TIME_LEFT = "timeLeft";
     public static final int NOTIFICAION_ID = 001;
+    public static final String IS_TIMER_RUNNING = "isTimerRunning";
 
     //UI components
     private TextView txtTimer;
@@ -119,8 +120,12 @@ public class TimerFragment extends Fragment {
         btnDeduct15 = (Button) view.findViewById(R.id.btn_deduct15);
         addClickActions();
         long wallTimeLeft = getActivity().getPreferences(Context.MODE_PRIVATE).getLong(WALL_TIME_LEFT, 0);
+        isTimerRunning = getActivity().getPreferences(Context.MODE_PRIVATE).getBoolean(IS_TIMER_RUNNING, false);
 
-        if(wallTimeLeft != 0) {
+
+        wallTimeLeft = 5000;
+        isTimerRunning = true;
+        if(wallTimeLeft != 0 && isTimerRunning) {
             mMillisLeft = wallTimeLeft - System.currentTimeMillis();
             startTimer(mMillisLeft);
         }
@@ -180,13 +185,16 @@ public class TimerFragment extends Fragment {
         else {
             editor.putLong(WALL_TIME_LEFT, 0);
         }
+        editor.putBoolean(IS_TIMER_RUNNING, isTimerRunning);
         editor.commit();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mAlarm.setAlarm(getActivity(), mMillisLeft);
+        if(isTimerRunning) {
+            mAlarm.setAlarm(getActivity(), mMillisLeft);
+        }
     }
 
     @Override
@@ -249,22 +257,20 @@ public class TimerFragment extends Fragment {
         }
     }
     private void startTimer(long milliseconds) {
-        if(mCounter != null) mCounter.cancel();
-        mCounter = new ExtendedCounterDownTimer(milliseconds, TIMER_STEP);
-        mCounter.start();
-        isTimerRunning = true;
+
         btnStop.setText(R.string.pause);
         btnStop.setVisibility(View.VISIBLE);
 
         mBuilder = new NotificationCompat.Builder(getActivity())
                 .setSmallIcon(R.drawable.notification_template_icon_bg)
                 .setContentTitle("Timer")
-                .setContentText(mMillisLeft + "");
+                .setContentText(mMillisLeft + "")
+                .setSmallIcon(R.drawable.ic_timer_black_24dp);;
 
         Intent resultIntent = new Intent(getActivity(), TimerActivity.class);
 
-// Because clicking the notification opens a new ("special") activity, there's
-// no need to create an artificial back stack.
+        // Because clicking the notification opens a new ("special") activity, there's
+        // no need to create an artificial back stack.
         PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(
                         getActivity(),
@@ -279,6 +285,11 @@ public class TimerFragment extends Fragment {
         mNotificationManager =
                 (NotificationManagerCompat) NotificationManagerCompat.from(getActivity());
         mNotificationManager.notify(NOTIFICAION_ID, mBuilder.build());
+
+        if(mCounter != null) mCounter.cancel();
+        mCounter = new ExtendedCounterDownTimer(milliseconds, TIMER_STEP);
+        mCounter.start();
+        isTimerRunning = true;
     }
 
     class ExtendedCounterDownTimer extends CountDownTimer {
@@ -295,7 +306,10 @@ public class TimerFragment extends Fragment {
                     TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours((millisUntilFinished))),
                     TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((millisUntilFinished))));
             txtTimer.setText(displayText);
+
             mBuilder.setContentText(displayText);
+
+
             mNotificationManager.notify(NOTIFICAION_ID, mBuilder.build());
 
         }
@@ -303,6 +317,7 @@ public class TimerFragment extends Fragment {
         @Override
         public void onFinish() {
             txtTimer.setText(R.string.zero_time);
+            mBuilder.setContentText("Time to Eat a Small Meal");
         }
     }
 }

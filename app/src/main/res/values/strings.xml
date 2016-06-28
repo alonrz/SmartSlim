@@ -8,9 +8,9 @@
     <string name="restart">RESTART</string>
     <string name="btn_add15min">+15m</string>
     <string name="btn_deduct15min">-15m</string>
-    <string name="choose_time_label">Choose time until next meal based on how much you just ate</string>
-    <string name="recommended_explanation_label">These are the recommended times between meals</string>
-    <string name="general_explanation_label">Use this timer to help you know when you should eat next to keep a steady blood sugar levels</string>
+    <string name="choose_time_label">Choose time until next meal</string>
+    <string name="recommended_explanation_label">Recommended times between meals are:</string>
+    <string name="general_explanation_label">This timer helps you know when to eat next to keep a steady blood sugar level</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
