@@ -187,6 +187,7 @@ public class TimerFragment extends Fragment {
         }
         editor.putBoolean(IS_TIMER_RUNNING, isTimerRunning);
         editor.commit();
+        mNotificationManager.cancel(NOTIFICAION_ID);
     }
 
     @Override
